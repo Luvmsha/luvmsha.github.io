@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Веб-разработка для бизнеса</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Onest:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #1e1e1e;
+    --accent: #c8ff00;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #666;
+    --font-head: 'Unbounded', sans-serif;
+    --font-body: 'Onest', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-head);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .nav-cta {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 0.5rem 1.25rem;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,255,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,255,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,255,0,0.08) 0%, transparent 70%);
+    top: -100px; right: -200px;
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 900px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(2.5rem, 8vw, 6.5rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+    position: relative;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: var(--muted);
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.9rem 2rem;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.95rem;
+    padding: 0.9rem 2rem;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.6s 0.4s ease both;
+    flex-wrap: wrap;
+  }
+
+  .stat-item { display: flex; flex-direction: column; gap: 0.2rem; }
+  .stat-num {
+    font-family: var(--font-head);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label { font-size: 0.75rem; color: var(--muted); }
+
+  /* ── SECTION BASE ── */
+  section { padding: 5rem 2rem; }
+
+  .section-label {
+    font-family: var(--font-head);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-family: var(--font-head);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 480px;
+    margin-bottom: 3rem;
+    font-weight: 300;
+  }
+
+  .max-w { max-width: 1100px; margin: 0 auto; }
+
+  /* ── SERVICES ── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 3rem;
+  }
+
+  .service-card {
+    background: var(--surface);
+    padding: 2rem;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card:hover { background: #161616; }
+
+  .service-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .service-card:hover::after { transform: scaleX(1); }
+
+  .service-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .service-title {
+    font-family: var(--font-head);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .service-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-price {
+    font-family: var(--font-head);
+    font-size: 0.8rem;
+    color: var(--accent);
+  }
+
+  /* ── PORTFOLIO ── */
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .portfolio-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+  .portfolio-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+
+  .portfolio-thumb {
+    height: 200px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .portfolio-thumb-1 { background: linear-gradient(135deg, #1a0f00, #2d1a00); }
+  .portfolio-thumb-2 { background: linear-gradient(135deg, #0a0a1a, #12122a); }
+  .portfolio-thumb-3 { background: linear-gradient(135deg, #001a0f, #002d1a); }
+
+  .portfolio-tag {
+    position: absolute;
+    top: 1rem; left: 1rem;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid var(--border);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+    font-family: var(--font-head);
+    text-transform: uppercase;
+  }
+
+  .portfolio-info {
+    padding: 1.5rem;
+  }
+
+  .portfolio-name {
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .portfolio-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .portfolio-link {
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: gap 0.2s;
+  }
+  .portfolio-link:hover { gap: 0.6rem; }
+
+  /* ── HOW IT WORKS ── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0;
+    margin-top: 3rem;
+    position: relative;
+  }
+
+  .step {
+    padding: 2rem;
+    position: relative;
+  }
+
+  .step-num {
+    font-family: var(--font-head);
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .step-title {
+    font-family: var(--font-head);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── PRICING ── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .pricing-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    transition: border-color 0.2s;
+  }
+  .pricing-card:hover { border-color: var(--accent); }
+  .pricing-card.featured { border-color: var(--accent); position: relative; }
+
+  .featured-badge {
+    position: absolute;
+    top: -1px; right: 1.5rem;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .pricing-name {
+    font-family: var(--font-head);
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+
+  .pricing-price {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .pricing-from { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
+
+  .pricing-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pricing-features li {
+    font-size: 0.82rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pricing-features li::before {
+    content: '✓';
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.7rem;
+  }
+
+  .pricing-cta {
+    display: block;
+    text-align: center;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .pricing-card.featured .pricing-cta {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .pricing-cta:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    padding: 5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-glow {
+    position: absolute;
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(200,255,0,0.06) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 { margin-bottom: 1rem; }
+  .cta-section p { color: var(--muted); margin-bottom: 2.5rem; font-weight: 300; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--muted);
+    flex-wrap: gap;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    nav { padding: 1rem 1.25rem; }
+    section { padding: 3.5rem 1.25rem; }
+    .hero { padding: 7rem 1.25rem 3rem; }
+    .hero-stats { gap: 1.5rem; }
+    .steps { grid-template-columns: 1fr; }
+    footer { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">MIKE.DEV</a>
+  <a href="https://t.me/YOURHANDLE" class="nav-cta" target="_blank">Написать →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Принимаю заказы · Срок 3–5 дней
+    </div>
+    <h1>Сайт для<br>вашего <em>бизнеса</em><br>— за 3 дня.</h1>
+    <p class="hero-sub">
+      Делаю лендинги, каталоги и небольшие веб-приложения для кафе, салонов, магазинов и других малых бизнесов. Всё отлично работает на телефоне.
+    </p>
+    <div class="hero-actions">
+      <a href="#portfolio" class="btn-primary">Смотреть работы ↓</a>
+      <a href="https://t.me/YOURHANDLE" class="btn-ghost" target="_blank">Написать в Telegram</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">3</span>
+        <span class="stat-label">дня в среднем</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">100%</span>
+        <span class="stat-label">адаптация под телефон</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">50%</span>
+        <span class="stat-label">предоплата, остаток после</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="max-w">
+    <p class="section-label reveal">Услуги</p>
+    <h2 class="reveal">Что я делаю</h2>
+    <p class="section-sub reveal">Всё, что нужно малому бизнесу в интернете — без лишнего.</p>
+    <div class="services-grid reveal">
+      <div class="service-card">
+        <div class="service-icon">⚡</div>
+        <div class="service-title">Лендинг под ключ</div>
+        <div class="service-desc">Одностраничный сайт с вашим контентом, формой заявки и кнопкой в WhatsApp / Telegram. Идеально для быстрого старта.</div>
+        <div class="service-price">от 3 000 ₽</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🏪</div>
+        <div class="service-title">Сайт с каталогом</div>
+        <div class="service-desc">Несколько страниц: главная, услуги/товары, галерея, контакты. Подходит для кафе, салонов, мастерских.</div>
+        <div class="service-price">от 8 000 ₽</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">📦</div>
+        <div class="service-title">Мини-магазин / Доставка</div>
+        <div class="service-desc">Каталог товаров, корзина, оформление заказа через WhatsApp или форму. Без дорогого CMS.</div>
+        <div class="service-price">от 15 000 ₽</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🤖</div>
+        <div class="service-title">Telegram-бот</div>
+        <div class="service-desc">Бот для приёма заявок, записи клиентов или рассылки. Работает прямо в Telegram вашего бизнеса.</div>
+        <div class="service-price">от 5 000 ₽</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="max-w">
+    <p class="section-label reveal">Портфолио</p>
+    <h2 class="reveal">Примеры работ</h2>
+    <p class="section-sub reveal">Демо-проекты, показывающие типичные задачи малого бизнеса.</p>
+    <div class="portfolio-grid reveal">
+
+      <div class="portfolio-card">
+        <div class="portfolio-thumb portfolio-thumb-1">
+          <div class="portfolio-tag">Кафе</div>
+          ☕
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-name">Кофейня «Уют»</div>
+          <div class="portfolio-desc">Лендинг для уютного кафе. Меню, бронирование стола, часы работы и адрес. Мобильная версия.</div>
+          <a href="#" class="portfolio-link">Смотреть демо →</a>
+        </div>
+      </div>
+
+      <div class="portfolio-card">
+        <div class="portfolio-thumb portfolio-thumb-2">
+          <div class="portfolio-tag">Салон</div>
+          💅
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-name">Studio Nova</div>
+          <div class="portfolio-desc">Сайт для салона красоты. Услуги с ценами, галерея работ, форма онлайн-записи.</div>
+          <a href="#" class="portfolio-link">Смотреть демо →</a>
+        </div>
+      </div>
+
+      <div class="portfolio-card">
+        <div class="portfolio-thumb portfolio-thumb-3">
+          <div class="portfolio-tag">Доставка</div>
+          🛒
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-name">Доставка «Свежее»</div>
+          <div class="portfolio-desc">Мини-магазин с каталогом товаров, поиском и заказом через WhatsApp. Без лишних сервисов.</div>
+          <a href="#" class="portfolio-link">Смотреть демо →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="process">
+  <div class="max-w">
+    <p class="section-label reveal">Как это работает</p>
+    <h2 class="reveal">Просто и понятно</h2>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">Вы пишете мне</div>
+        <div class="step-desc">Рассказываете, что нужно. Я задам несколько вопросов и предложу решение.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Бриф и предоплата 50%</div>
+        <div class="step-desc">Заполняете короткую форму. После — оплата половины суммы. Начинаю работу.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Показываю черновик</div>
+        <div class="step-desc">Через 2–3 дня присылаю ссылку на готовый черновик. Вносим правки вместе.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-title">Готово. Вы платите остаток</div>
+        <div class="step-desc">Финальная версия опубликована. Вы платите оставшиеся 50% и получаете доступ к сайту.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="max-w">
+    <p class="section-label reveal">Цены</p>
+    <h2 class="reveal">Честно и без скрытых платежей</h2>
+    <p class="section-sub reveal">Финальная цена обсуждается после брифа — зависит от объёма.</p>
+    <div class="pricing-grid reveal">
+
+      <div class="pricing-card">
+        <div class="pricing-name">Старт</div>
+        <div class="pricing-price">3 000 ₽</div>
+        <div class="pricing-from">Лендинг · 1 страница</div>
+        <ul class="pricing-features">
+          <li>Главная страница</li>
+          <li>Форма заявки или WhatsApp</li>
+          <li>Адаптация под телефон</li>
+          <li>Хостинг включён</li>
+        </ul>
+        <a href="https://t.me/YOURHANDLE" class="pricing-cta" target="_blank">Обсудить →</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="featured-badge">Популярное</div>
+        <div class="pricing-name">Бизнес</div>
+        <div class="pricing-price">8 000 ₽</div>
+        <div class="pricing-from">Сайт · 3–5 страниц</div>
+        <ul class="pricing-features">
+          <li>Главная + услуги/меню + контакты</li>
+          <li>Галерея фото</li>
+          <li>Форма заявки</li>
+          <li>Адаптация под телефон</li>
+          <li>Хостинг включён</li>
+        </ul>
+        <a href="https://t.me/YOURHANDLE" class="pricing-cta" target="_blank">Обсудить →</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-name">Магазин</div>
+        <div class="pricing-price">15 000 ₽</div>
+        <div class="pricing-from">Веб-приложение</div>
+        <ul class="pricing-features">
+          <li>Каталог с поиском</li>
+          <li>Корзина и оформление заказа</li>
+          <li>WhatsApp/Telegram заказы</li>
+          <li>Адаптация под телефон</li>
+          <li>Хостинг включён</li>
+        </ul>
+        <a href="https://t.me/YOURHANDLE" class="pricing-cta" target="_blank">Обсудить →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div style="position:relative;z-index:2;">
+    <p class="section-label" style="display:block;text-align:center;margin-bottom:1rem;">Начать</p>
+    <h2>Нет сайта?<br>Это легко исправить.</h2>
+    <p>Напишите — и через 3 дня у вашего бизнеса будет современный сайт.</p>
+    <a href="https://t.me/YOURHANDLE" class="btn-primary" target="_blank" style="display:inline-flex;">
+      Написать в Telegram →
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Mike.dev</span>
+  <span style="color: var(--border);">Сайты для малого бизнеса · Быстро и недорого</span>
+  <a href="https://t.me/YOURHANDLE" style="color:var(--accent);text-decoration:none;" target="_blank">@YOURHANDLE</a>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth nav highlight
+  const sections = document.querySelectorAll('section[id]');
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    sections.forEach(section => {
+      const offset = section.offsetTop - 100;
+      const height = section.offsetHeight;
+      if (scrollY >= offset && scrollY < offset + height) {
+        document.querySelectorAll('nav a').forEach(a => a.style.color = '');
+      }
+    });
+  });
+</script>
+</body>
+</html>
